@@ -42,7 +42,8 @@ a { color: var(--link); }
   letter-spacing: -1px;
   overflow-wrap: anywhere;
 }
-.top .tagline { font: 15px/1.5 var(--mono); margin-top: 16px; max-width: 34em; }
+.top .tagline { font: 15px/1.5 var(--mono); margin-top: 16px; }
+.top .tagline span { display: block; }
 @media (max-width: 560px) { .top h1 { font-size: 44px; } }
 
 /* ---------- buttons ---------- */
