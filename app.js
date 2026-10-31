@@ -1,5 +1,5 @@
-import { requestKeyboard, reconnectKnown, KeyboardError, WIDTH, HEIGHT, DEVICES } from './protocol.js?v=20261031155716';
-import { decodeFile, pickFrames, drawFrame, renderForKeyboard } from './frames.js?v=20261031155716';
+import { requestKeyboard, reconnectKnown, KeyboardError, WIDTH, HEIGHT, DEVICES } from './protocol.js?v=20261031155931';
+import { decodeFile, pickFrames, drawFrame, renderForKeyboard } from './frames.js?v=20261031155931';
 
 const SECONDS_PER_FRAME = 3.5; // measured: 25 frames took ~85 s including the erase
 const DEFAULT_CAP = 60;

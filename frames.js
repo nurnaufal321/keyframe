@@ -1,5 +1,5 @@
 // Decoding images/GIFs and rendering them to 240x135 frames for the keyboard.
-import { WIDTH, HEIGHT, MAX_FRAMES_PER_SLOT, toRGB565 } from './protocol.js?v=20261031155716';
+import { WIDTH, HEIGHT, MAX_FRAMES_PER_SLOT, toRGB565 } from './protocol.js?v=20261031155931';
 
 const DEFAULT_FRAME_MS = 100;
 
