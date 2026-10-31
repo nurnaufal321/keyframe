@@ -301,31 +301,40 @@ function renderSlot(i) {
     });
     meta.replaceChildren(name, count);
   } else {
-    meta.textContent = i === 1 ? 'Optional · uses slot 1\'s first frame' : 'Empty';
+    const lines = i === 1 ? ['Optional', 'Uses slot 1\'s first frame'] : ['Empty'];
+    meta.replaceChildren(...lines.map((t) => Object.assign(document.createElement('span'), { className: 'meta-count', textContent: t })));
   }
 
+  // Controls are always shown so both cards keep the same shape; they're
+  // disabled until the slot has an image, and frame controls need a GIF.
   const box = $('.controls', el);
-  if (!slot.source) {
-    box.replaceChildren();
-  } else {
-    if (!box.firstChild) buildControls(i);
-    const n = slot.source.frames.length;
-    box.querySelectorAll('.seg button').forEach((b) => b.classList.toggle('on', b.dataset.fit === slot.fit));
-    $('.pan-hint', box).hidden = slot.fit !== 'fill';
-    $('.bg-row', box).hidden = slot.fit !== 'fit';
-    $('.bg', box).value = slot.bg;
-    const multi = n > 1;
-    $('.frames-row', box).hidden = !multi;
-    $('.every-row', box).hidden = !multi;
-    $('.adv', box).hidden = !multi || n <= DEFAULT_CAP;
-    const cap = $('.cap', box);
-    cap.max = Math.min(n, slot.adv ? 255 : DEFAULT_CAP);
-    cap.value = Math.min(slot.cap, +cap.max);
-    slot.cap = +cap.value;
-    $('.cap-out', box).textContent = cap.value;
-    $('.every', box).value = slot.every;
-    $('.adv-box', box).checked = slot.adv;
-  }
+  if (!box.firstChild) buildControls(i);
+  const has = !!slot.source;
+  const n = has ? slot.source.frames.length : 0;
+  const multi = n > 1;
+  box.classList.toggle('off', !has);
+  box.querySelectorAll('.seg button').forEach((b) => {
+    b.classList.toggle('on', b.dataset.fit === slot.fit);
+    b.disabled = !has || state.busy;
+  });
+  $('.pan-hint', box).hidden = slot.fit !== 'fill';
+  $('.bg-row', box).hidden = slot.fit !== 'fit';
+  $('.bg', box).value = slot.bg;
+  $('.bg', box).disabled = !has || state.busy;
+  $('.adv', box).hidden = !multi || n <= DEFAULT_CAP;
+  const cap = $('.cap', box);
+  cap.max = Math.max(1, Math.min(n, slot.adv ? 255 : DEFAULT_CAP));
+  cap.value = has ? Math.min(slot.cap, +cap.max) : 1;
+  if (has) slot.cap = +cap.value;
+  cap.disabled = !multi || state.busy;
+  $('.cap-out', box).textContent = has ? cap.value : '–';
+  $('.frames-row', box).classList.toggle('off', !multi);
+  $('.every', box).value = slot.every;
+  $('.every', box).disabled = !multi || state.busy;
+  $('.every-row', box).classList.toggle('off', !multi);
+  $('.adv-box', box).checked = slot.adv;
+  $('.adv-box', box).disabled = state.busy;
+  $('.remove', box).disabled = !has || state.busy;
   previews[i].set(eff);
   renderSummary();
 }
@@ -377,6 +386,8 @@ function renderSummary() {
 function lock(on) {
   state.busy = on;
   document.querySelectorAll('.slot button, .slot input, .slot select').forEach((c) => { c.disabled = on; });
+  // Unlocking re-derives each control's state (empty slots stay disabled).
+  if (!on) slotEls.forEach((_, i) => renderSlot(i));
   renderSummary();
 }
 

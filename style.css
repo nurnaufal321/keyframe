@@ -193,6 +193,18 @@ input[type="range"]::-webkit-slider-thumb { appearance: none; width: 20px; heigh
 input[type="range"]::-moz-range-track { height: 3px; background: var(--black); }
 input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; background: var(--black); border: var(--thick) solid var(--black); border-radius: 0; }
 
+/* Disabled controls: grey borders and fills, never opacity. */
+.seg button.on:disabled { background: var(--disabled-border); color: var(--white); border-color: var(--disabled-border); }
+select:disabled, input[type="color"]:disabled { color: var(--text-3); background: var(--disabled-bg); border-color: var(--disabled-border); cursor: not-allowed; }
+input[type="range"]:disabled { cursor: not-allowed; }
+input[type="range"]:disabled::-webkit-slider-runnable-track { background: var(--disabled-border); }
+input[type="range"]:disabled::-webkit-slider-thumb { background: var(--disabled-border); border-color: var(--disabled-border); }
+input[type="range"]:disabled::-moz-range-track { background: var(--disabled-border); }
+input[type="range"]:disabled::-moz-range-thumb { background: var(--disabled-border); border-color: var(--disabled-border); }
+.controls.off .label, .controls.off .sub, .controls.off .cap-out,
+.row.off .label, .row.off .cap-out { color: var(--text-3); }
+button.ghost:disabled, button.ghost:disabled:hover { background: transparent; color: var(--text-3); border: none; }
+
 .check { display: inline-flex; align-items: center; gap: 10px; font-size: 14px; cursor: pointer; }
 input[type="checkbox"] {
   appearance: none; flex: none; width: 20px; height: 20px; margin: 0;
