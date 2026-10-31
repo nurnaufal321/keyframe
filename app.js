@@ -15,7 +15,7 @@ const state = {
   busy: false,
   slots: [0, 1].map(() => ({
     source: null, fit: store.get('fit') || 'fill', panX: 0.5, panY: 0.5,
-    bg: '#000000', cap: DEFAULT_CAP, every: 1, adv: false, same: false,
+    bg: '#000000', cap: DEFAULT_CAP, every: 1, adv: false,
   })),
 };
 
@@ -130,13 +130,6 @@ slotEls.forEach((el, i) => {
   const endPan = () => { pan = null; drop.classList.remove('panning'); };
   drop.addEventListener('pointerup', endPan);
   drop.addEventListener('pointercancel', endPan);
-
-  if (i === 1) {
-    $('.same-box', el).addEventListener('change', (e) => {
-      slot.same = e.target.checked;
-      renderSlot(1);
-    });
-  }
 });
 
 const clamp = (v) => Math.min(1, Math.max(0, v));
@@ -162,7 +155,7 @@ async function loadFile(i, file) {
     log(`decode failed: ${e}`);
   }
   renderSlot(i);
-  if (i === 0 && state.slots[1].same) renderSlot(1);
+  if (i === 0) renderSlot(1); // slot 2's empty-state text depends on slot 1
 }
 
 function buildControls(i) {
@@ -188,18 +181,13 @@ function buildControls(i) {
     slot.source = null;
     $('input[type=file]', el).value = '';
     renderSlot(i);
-    if (i === 0 && state.slots[1].same) renderSlot(1);
+    if (i === 0) renderSlot(1);
   });
 }
 
-// The frames a slot will send, after "same as slot 1".
+// The frames a slot will send. An empty slot 2 reuses slot 1's first frame at upload.
 function effective(i) {
   const slot = state.slots[i];
-  if (i === 1 && slot.same) {
-    const s0 = state.slots[0];
-    if (!s0.source) return null;
-    return { slot: s0, picked: pickFrames(s0.source, s0).slice(0, 1) };
-  }
   if (!slot.source) return null;
   return { slot, picked: pickFrames(slot.source, slot) };
 }
@@ -209,16 +197,15 @@ function renderSlot(i) {
   const slot = state.slots[i];
   const eff = effective(i);
   const drop = $('.drop', el);
-  const usingSame = i === 1 && slot.same;
 
   drop.classList.toggle('has', !!eff);
-  drop.style.pointerEvents = usingSame ? 'none' : '';
+  const reuse = i === 1 && !eff && state.slots[0].source;
   $('.meta', el).textContent = eff
-    ? (usingSame ? 'Copy of slot 1' : `${slot.source.name} · ${eff.picked.length} of ${slot.source.frames.length} frame(s)`)
-    : 'Empty';
+    ? `${slot.source.name} · ${eff.picked.length} of ${slot.source.frames.length} frame(s)`
+    : (reuse ? 'Empty · reuses slot 1\'s first frame' : 'Empty');
 
   const box = $('.controls', el);
-  if (!slot.source || usingSame) {
+  if (!slot.source) {
     box.replaceChildren();
   } else {
     if (!box.firstChild) buildControls(i);
