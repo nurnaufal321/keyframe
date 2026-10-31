@@ -280,10 +280,18 @@ function renderSlot(i) {
   const drop = $('.drop', el);
 
   drop.classList.toggle('has', !!eff);
-  const reuse = i === 1 && !eff && state.slots[0].source;
-  $('.meta', el).textContent = eff
-    ? `${slot.source.name} · ${eff.picked.length} of ${slot.source.frames.length} frame(s)`
-    : (reuse ? 'Empty · reuses slot 1\'s first frame' : 'Empty');
+  const meta = $('.meta', el);
+  if (eff) {
+    const n = slot.source.frames.length;
+    const name = Object.assign(document.createElement('span'), { className: 'meta-name', textContent: slot.source.name, title: slot.source.name });
+    const count = Object.assign(document.createElement('span'), {
+      className: 'meta-count',
+      textContent: n === 1 ? 'Still image' : `${eff.picked.length} of ${n} frames`,
+    });
+    meta.replaceChildren(name, count);
+  } else {
+    meta.textContent = i === 1 ? 'Optional · uses slot 1\'s first frame' : 'Empty';
+  }
 
   const box = $('.controls', el);
   if (!slot.source) {

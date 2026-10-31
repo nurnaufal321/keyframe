@@ -115,14 +115,15 @@ button:disabled, button:disabled:hover {
 .conn .title { font: 600 22px/1.2 var(--body); margin-bottom: 8px; }
 
 /* ---------- slots ---------- */
-.slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 24px; align-items: start; }
+.slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 24px; align-items: stretch; }
 @media (max-width: 760px) { .slots { grid-template-columns: minmax(0, 1fr); } }
 .slots .card { margin-bottom: 0; }
-.drop .hint-note { display: block; margin-top: 16px; border-top: 2px solid var(--black); padding-top: 8px; font-size: 12px; }
 .slot { display: flex; flex-direction: column; gap: 16px; }
 .slot-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; border-bottom: var(--thick) solid var(--black); padding-bottom: 8px; }
-.slot-head h2 { font: 32px/1.1 var(--head); margin: 0; text-transform: uppercase; }
-.meta { font: 13px/1.5 var(--mono); text-align: right; overflow-wrap: anywhere; }
+.slot-head h2 { font: 32px/1.1 var(--head); margin: 0; text-transform: uppercase; white-space: nowrap; flex: none; }
+.meta { font: 13px/1.5 var(--mono); text-align: right; min-width: 0; min-height: 3em; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-end; }
+.meta-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meta-count { white-space: nowrap; }
 
 .drop {
   position: relative; display: block; aspect-ratio: 240 / 135;
