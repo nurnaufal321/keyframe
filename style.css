@@ -142,6 +142,20 @@ button:disabled, button:disabled:hover {
 .drop .hint b { font: 18px/1.2 var(--head); text-transform: uppercase; margin-bottom: 4px; }
 .drop.has .hint { display: none; }
 
+/* ---------- link row ---------- */
+.url-row { display: flex; gap: 0; }
+.url-row input {
+  flex: 1; min-width: 0;
+  font: 15px/1.5 var(--mono); color: var(--black);
+  background: var(--sunken); border: var(--thick) solid var(--black); border-right: none;
+  padding: 4px 12px;
+}
+.url-row input::placeholder { color: var(--text-3); }
+.url-row input:hover { background: var(--sunken-hover); }
+.url-row input:focus { outline: none; box-shadow: inset 0 0 0 2px var(--black); }
+.url-row input:disabled { border-color: var(--disabled-border); background: var(--disabled-bg); }
+.url-row button { min-height: 44px; white-space: nowrap; }
+
 /* ---------- controls ---------- */
 .controls { display: flex; flex-direction: column; gap: 16px; }
 .controls:empty { display: none; }

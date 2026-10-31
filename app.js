@@ -106,7 +106,16 @@ slotEls.forEach((el, i) => {
     e.preventDefault();
     drop.classList.remove('dragover');
     const file = e.dataTransfer.files[0];
+    // Images dragged from another browser tab arrive as a link, not a file.
+    const link = e.dataTransfer.getData('text/uri-list').split('\n').find((l) => l && !l.startsWith('#'));
     if (file) loadFile(i, file);
+    else if (link) loadUrl(i, link.trim());
+  });
+
+  const form = $('.url-row', el);
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    loadUrl(i, $('.url', form).value.trim());
   });
 
   // Once an image is loaded, clicks pan the crop instead of opening the picker.
@@ -133,6 +142,78 @@ slotEls.forEach((el, i) => {
 });
 
 const clamp = (v) => Math.min(1, Math.max(0, v));
+
+// Pasting anywhere outside a text box loads into the first empty slot.
+document.addEventListener('paste', (e) => {
+  if (state.busy || e.target.closest('input, textarea')) return;
+  const i = state.slots[0].source && !state.slots[1].source ? 1 : 0;
+  const file = [...e.clipboardData.files].find((f) => f.type.startsWith('image/'));
+  const text = e.clipboardData.getData('text').trim();
+  if (file) { e.preventDefault(); loadFile(i, file); }
+  else if (/^https?:\/\//i.test(text)) { e.preventDefault(); loadUrl(i, text); }
+});
+
+// Turn share-page links into direct image links where the pattern is known.
+function directImageUrl(raw) {
+  const url = new URL(raw);
+  const host = url.hostname.replace(/^www\./, '');
+  if (host === 'giphy.com' && /^\/(gifs|stickers)\//.test(url.pathname)) {
+    const id = url.pathname.split('/').filter(Boolean).pop().split('-').pop();
+    return `https://media.giphy.com/media/${id}/giphy.gif`;
+  }
+  if (host === 'i.imgur.com' && url.pathname.endsWith('.gifv')) {
+    url.pathname = url.pathname.replace(/\.gifv$/, '.gif');
+  }
+  return url.href;
+}
+
+function sniffImageType(bytes) {
+  const b = new Uint8Array(bytes.slice(0, 12));
+  const ascii = String.fromCharCode(...b);
+  if (ascii.startsWith('GIF8')) return 'image/gif';
+  if (b[0] === 0x89 && ascii.slice(1, 4) === 'PNG') return 'image/png';
+  if (b[0] === 0xff && b[1] === 0xd8) return 'image/jpeg';
+  if (ascii.startsWith('RIFF') && ascii.slice(8, 12) === 'WEBP') return 'image/webp';
+  return '';
+}
+
+async function loadUrl(i, raw) {
+  if (state.busy || !raw) return;
+  let url;
+  try {
+    url = directImageUrl(raw);
+  } catch {
+    setStatus('That isn\'t a valid link.', 'err');
+    return;
+  }
+  const meta = $('.meta', slotEls[i]);
+  meta.textContent = 'Downloading…';
+  log(`slot ${i + 1}: fetching ${url}`);
+  let res;
+  try {
+    res = await fetch(url, { mode: 'cors', credentials: 'omit' });
+  } catch {
+    // A blocked cross-site request surfaces as a network error with no detail.
+    setStatus('Couldn\'t download that link. If it\'s a web page, right-click the GIF and copy its image address. Some sites block downloads from other pages; for those, save the GIF and drop it here.', 'err');
+    renderSlot(i);
+    return;
+  }
+  if (!res.ok) {
+    setStatus(`The link returned an error (${res.status}). Check that it points straight at an image.`, 'err');
+    renderSlot(i);
+    return;
+  }
+  const bytes = await res.arrayBuffer();
+  const type = sniffImageType(bytes) || res.headers.get('content-type')?.split(';')[0] || '';
+  if (!type.startsWith('image/')) {
+    setStatus('That link is a web page, not an image. Right-click the GIF and copy its image address instead.', 'err');
+    renderSlot(i);
+    return;
+  }
+  const name = decodeURIComponent(new URL(url).pathname.split('/').pop() || 'image') || 'image';
+  await loadFile(i, new File([bytes], name, { type }));
+  $('.url', slotEls[i]).value = '';
+}
 
 async function loadFile(i, file) {
   if (state.busy) return;
