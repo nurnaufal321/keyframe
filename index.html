@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GMK104 Screen</title>
+  <meta name="description" content="Put your own images and GIFs on the ZUOYA GMK104 keyboard screen, straight from Chrome or Edge.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='8' width='26' height='16' rx='3' fill='%23e8a87c'/%3E%3Crect x='7' y='11' width='18' height='10' rx='1' fill='%23222'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <h1>GMK104 Screen</h1>
+    </div>
+    <button id="theme" class="ghost" aria-label="Switch theme">Light</button>
+  </header>
+
+  <main>
+    <div id="nohid" class="banner warn" hidden>
+      This browser can't talk to keyboards. Open this page in <strong>Chrome</strong> or <strong>Edge</strong> on a computer to upload.
+      You can still try out images and previews here.
+    </div>
+
+    <section class="card conn">
+      <div class="kbd-icon" aria-hidden="true"></div>
+      <div class="conn-text">
+        <p id="kb-name" class="title">No keyboard connected</p>
+        <p id="kb-status" class="sub">Plug in the USB cable, then connect.</p>
+      </div>
+      <button id="connect">Connect</button>
+    </section>
+
+    <div class="slots">
+      <section class="card slot" data-slot="0">
+        <div class="slot-head">
+          <h2>Slot 1</h2>
+          <span class="meta">Empty</span>
+        </div>
+        <label class="drop">
+          <canvas class="preview" width="240" height="135"></canvas>
+          <span class="hint"><b>Drop an image or GIF</b>or click to choose</span>
+          <input type="file" accept="image/*" hidden>
+        </label>
+        <div class="controls"></div>
+      </section>
+
+      <section class="card slot" data-slot="1">
+        <div class="slot-head">
+          <h2>Slot 2</h2>
+          <span class="meta">Empty</span>
+        </div>
+        <label class="same"><input type="checkbox" class="same-box"> Same as slot 1 (first frame)</label>
+        <label class="drop">
+          <canvas class="preview" width="240" height="135"></canvas>
+          <span class="hint"><b>Drop an image or GIF</b>or click to choose</span>
+          <input type="file" accept="image/*" hidden>
+        </label>
+        <div class="controls"></div>
+      </section>
+    </div>
+
+    <section class="card upload">
+      <div class="upload-info">
+        <span id="summary">Add an image to slot 1 to start.</span>
+        <span class="sub">Both slots are rewritten on every upload.</span>
+      </div>
+      <div id="progress" class="progress" hidden><div class="bar"></div></div>
+      <p id="status" class="status" role="status"></p>
+      <div id="restart" class="banner error" hidden>
+        <p><b>The keyboard stopped responding.</b> Restart it, then reconnect:</p>
+        <ol>
+          <li>Unplug the USB cable.</li>
+          <li>Move the mode switch on the front to Bluetooth or 2.4G, then back to the middle (wired).</li>
+          <li>Plug the cable back in and press Reconnect.</li>
+        </ol>
+      </div>
+      <div class="actions">
+        <button id="upload" class="primary">Upload to keyboard</button>
+        <button id="sync" title="Send this computer's time to the keyboard's clock screen">Sync clock</button>
+      </div>
+    </section>
+
+    <details class="log">
+      <summary>Activity log</summary>
+      <pre id="log"></pre>
+    </details>
+  </main>
+
+  <footer>
+    <p>Works with the ZUOYA GMK104 over the USB cable. Other keyboards use different protocols and are refused.</p>
+    <p>After uploading, press the keyboard's TV button to cycle to your screens. Each upload takes about 3.5 s per frame.</p>
+    <p>Unofficial. Not affiliated with ZUOYA.</p>
+  </footer>
+
+  <template id="controls-tpl">
+    <div class="seg" role="group" aria-label="How the image fits">
+      <button data-fit="fill" class="on">Fill</button>
+      <button data-fit="fit">Fit</button>
+      <button data-fit="stretch">Stretch</button>
+    </div>
+    <p class="pan-hint sub">Drag the preview to move the crop.</p>
+    <label class="row bg-row" hidden>Background <input type="color" class="bg" value="#000000"></label>
+    <label class="row frames-row" hidden>Frames
+      <input type="range" class="cap" min="1" max="60" step="1" value="60">
+      <span class="cap-out">60</span>
+    </label>
+    <label class="row every-row" hidden>Keep
+      <select class="every">
+        <option value="1">every frame</option>
+        <option value="2">every 2nd frame</option>
+        <option value="3">every 3rd frame</option>
+        <option value="4">every 4th frame</option>
+      </select>
+    </label>
+    <div class="row slot-actions">
+      <label class="adv"><input type="checkbox" class="adv-box"> Allow up to 255 frames</label>
+      <button class="ghost remove">Remove</button>
+    </div>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
