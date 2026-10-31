@@ -237,5 +237,13 @@ footer {
   max-width: none; background: var(--black); color: var(--white);
   padding: 40px 16px 64px; font-size: 14px;
 }
-footer .inner { max-width: 1040px; margin: 0 auto; display: flex; flex-direction: column; gap: 8px; }
-footer .big { font: 32px/1.1 var(--head); text-transform: uppercase; margin-bottom: 16px; }
+footer .inner { max-width: 1008px; margin: 0 auto; }
+footer .big { font: 48px/1.05 var(--head); text-transform: uppercase; }
+footer .kicker { font: 15px/1.5 var(--mono); margin: 8px 0 40px; }
+footer .label { color: var(--white); margin-bottom: 8px; }
+footer a { color: var(--white); }
+footer a:hover { color: var(--black); background: var(--white); }
+.foot-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; border-top: var(--thick) solid var(--white); padding-top: 24px; }
+@media (max-width: 760px) { .foot-cols { grid-template-columns: minmax(0, 1fr); } }
+
+.try-other { flex-basis: 100%; color: var(--text-2); }

@@ -41,22 +41,33 @@ function renderConnection() {
   $('#kb-name').textContent = kb ? kb.name : 'No keyboard connected';
   const st = $('#kb-status');
   const needsRestart = !$('#restart').hidden;
-  st.textContent = kb ? 'Connected over USB' : (needsRestart ? 'Needs restart' : 'Not connected');
-  st.classList.toggle('ok', !!kb);
+  const untested = kb?.info.untested;
+  st.textContent = kb ? (untested ? 'Connected · untested keyboard' : 'Connected over USB')
+    : (needsRestart ? 'Needs restart' : 'Not connected');
+  st.classList.toggle('ok', !!kb && !untested);
+  st.classList.toggle('warn', !!untested);
   st.classList.toggle('err', !kb && needsRestart);
+  $('.try-other').hidden = !!kb;
   $('#connect').textContent = kb ? 'Disconnect' : ($('#restart').hidden ? 'Connect' : 'Reconnect');
   renderSummary();
 }
 
 async function connect() {
+  const untested = $('#try-other').checked;
+  if (untested && !confirm(
+    'This keyboard hasn\'t been tested with Keyframe.\n\n' +
+    'It only works if the keyboard uses the same screen firmware as the tested ones. ' +
+    'If it doesn\'t, the upload may fail, or the keyboard\'s screen may stop working until ' +
+    'you reflash it with the maker\'s software.\n\nTry it anyway?')) return;
   try {
-    const kb = await requestKeyboard();
+    const kb = await requestKeyboard({ untested });
     if (!kb) return;
     await kb.open();
     kb.log = log;
     state.keyboard = kb;
     $('#restart').hidden = true;
-    log(`connected: ${kb.name}`);
+    const id = (n) => n.toString(16).padStart(4, '0').toUpperCase();
+    log(`connected: ${kb.name} (${id(kb.device.vendorId)}:${id(kb.device.productId)})${kb.info.untested ? ', untested' : ''}`);
     setStatus('');
   } catch (e) {
     showError(e);

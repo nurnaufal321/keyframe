@@ -29,6 +29,7 @@
         <span id="kb-status" class="chip">Not connected</span>
       </div>
       <button id="connect">Connect</button>
+      <label class="check try-other"><input type="checkbox" id="try-other"> Try a keyboard that isn't on the list (untested, at your own risk)</label>
     </section>
 
     <div class="slots">
@@ -96,9 +97,22 @@
 
   <footer>
     <div class="inner">
-      <p class="big">Keyframe.<br>Unofficial. Not affiliated with any keyboard maker.</p>
-      <p>Supported keyboards (USB cable): <span id="supported"></span>. Keyboards not on this list are refused, because screen protocols differ between makers and a wrong command can leave a screen unusable.</p>
-      <p>After uploading, cycle the keyboard's screen to its custom slots (the TV button on the GMK104). Each upload takes about 3.5 s per frame.</p>
+      <p class="big">Keyframe</p>
+      <p class="kicker">Unofficial. Not affiliated with any keyboard maker.</p>
+      <div class="foot-cols">
+        <div>
+          <p class="label">Tested on</p>
+          <p><span id="supported"></span>, over the USB cable.</p>
+        </div>
+        <div>
+          <p class="label">Other keyboards</p>
+          <p>Keyboards that use the same screen firmware will probably work too. Many of them come with a Windows tool called "Image Custom Tool". Tick "Try a keyboard that isn't on the list" to try yours. If it works, <a href="https://github.com/nurnaufal321/keyframe/issues">tell us</a> so it can be added.</p>
+        </div>
+        <div>
+          <p class="label">After uploading</p>
+          <p>Switch the keyboard's screen to its custom slots (the TV button on the GMK104). Uploads take about 3.5 s per frame.</p>
+        </div>
+      </div>
     </div>
   </footer>
 

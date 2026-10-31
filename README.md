@@ -19,17 +19,23 @@ and Firefox don't have), plug the keyboard in with its USB cable, press
 Uploads take about 3.5 seconds per frame. Each one rewrites the keyboard's
 flash, so don't automate it every few seconds.
 
-## Supported keyboards
+## Keyboards
 
 | Keyboard | USB ID | Status |
 |---|---|---|
 | ZUOYA GMK104 | `320F:5055` | Tested, USB cable only |
 
-Keyboards not in `DEVICES` in [`protocol.js`](protocol.js) are refused. Screen
-protocols differ between makers, and a wrong command can leave a screen
-unusable. Sister models with the same firmware may work; add them only after
-testing. [`PROTOCOL.md`](PROTOCOL.md) documents the protocol and how it was
-worked out.
+Other keyboards that use the same screen firmware will probably work too.
+Many of them come with a Windows tool called "Image Custom Tool". To try one,
+tick **Try a keyboard that isn't on the list** before connecting. The site
+then accepts any keyboard with the same vendor screen interface (HID usage
+page `0xFF1C`). This is at your own risk: if the firmware is different, the
+upload may fail or the screen may stop working until you reflash it with the
+maker's software.
+
+If yours works, open an issue with its name and USB ID and it'll be added to
+`DEVICES` in [`protocol.js`](protocol.js). [`PROTOCOL.md`](PROTOCOL.md)
+documents the protocol and how it was worked out.
 
 ## If the keyboard stops responding
 

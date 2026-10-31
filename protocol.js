@@ -49,39 +49,47 @@ export function deviceInfo(dev) {
   return DEVICES.find((d) => d.vendorId === dev.vendorId && d.productId === dev.productId);
 }
 
-export async function requestKeyboard() {
+// Same vendor screen interface as the tested boards, assumed to share the
+// USB packet size. Only used when the user opts in to untested keyboards.
+const VENDOR_SCREEN_PAGE = 0xff1c;
+function untestedInfo(dev) {
+  return { vendorId: dev.vendorId, productId: dev.productId, name: dev.productName || 'Unknown keyboard',
+    usagePage: VENDOR_SCREEN_PAGE, chunk: 0x38, untested: true };
+}
+
+export async function requestKeyboard({ untested = false } = {}) {
   if (!('hid' in navigator)) throw new KeyboardError('This browser has no WebHID. Use Chrome or Edge on a computer.');
-  const filters = DEVICES.map(({ vendorId, productId, usagePage }) => ({ vendorId, productId, usagePage }));
+  const filters = untested
+    ? [{ usagePage: VENDOR_SCREEN_PAGE }]
+    : DEVICES.map(({ vendorId, productId, usagePage }) => ({ vendorId, productId, usagePage }));
   const picked = await navigator.hid.requestDevice({ filters });
-  return picked.length ? new Keyboard(pickVendorInterface(picked)) : null;
+  return picked.length ? pickVendorInterface(picked, untested) : null;
 }
 
 export async function reconnectKnown() {
   if (!('hid' in navigator)) return null;
   const known = (await navigator.hid.getDevices()).filter((d) => deviceInfo(d));
-  return known.length ? new Keyboard(pickVendorInterface(known)) : null;
+  return known.length ? pickVendorInterface(known, false) : null;
 }
 
-function pickVendorInterface(devices) {
-  const dev = devices.find((d) => {
-    const info = deviceInfo(d);
-    return info && d.collections.some((c) => c.usagePage === info.usagePage);
-  });
-  if (!dev) {
-    const d = devices[0];
-    const id = `${hex4(d.vendorId)}:${hex4(d.productId)}`;
-    throw new KeyboardError(`${d.productName || 'This device'} (${id}) isn't a supported keyboard. Nothing was sent.`);
+function pickVendorInterface(devices, untested) {
+  for (const d of devices) {
+    const info = deviceInfo(d) || (untested ? untestedInfo(d) : null);
+    if (info && d.collections.some((c) => c.usagePage === info.usagePage)) return new Keyboard(d, info);
   }
-  return dev;
+  const d = devices[0];
+  const id = `${hex4(d.vendorId)}:${hex4(d.productId)}`;
+  throw new KeyboardError(`${d.productName || 'This device'} (${id}) isn't on the tested list. Nothing was sent. ` +
+    'Tick "Try a keyboard that isn\'t on the list" to try it anyway.');
 }
 
 const hex4 = (n) => '0x' + n.toString(16).padStart(4, '0').toUpperCase();
 const hex = (bytes) => Array.from(bytes, (b) => b.toString(16).padStart(2, '0')).join(' ');
 
 export class Keyboard {
-  constructor(device) {
+  constructor(device, info) {
     this.device = device;
-    this.info = deviceInfo(device);
+    this.info = info;
     this.replies = [];
     this.waiter = null;
     this.log = () => {};
