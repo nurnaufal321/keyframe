@@ -26,23 +26,12 @@ function log(msg) {
   logEl.textContent += `[${t}] ${msg}\n`;
   logEl.scrollTop = logEl.scrollHeight;
 }
-function setStatus(msg, ok = false) {
+function setStatus(msg, kind = '') {
   const el = $('#status');
   el.textContent = msg;
-  el.classList.toggle('ok', ok);
+  el.classList.toggle('ok', kind === 'ok' || kind === true);
+  el.classList.toggle('err', kind === 'err');
 }
-
-// ---------- theme ----------
-function applyTheme(theme) {
-  document.documentElement.dataset.theme = theme;
-  $('#theme').textContent = theme === 'light' ? 'Dark' : 'Light';
-}
-applyTheme(store.get('theme') || 'dark');
-$('#theme').addEventListener('click', () => {
-  const next = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light';
-  applyTheme(next);
-  store.set('theme', next);
-});
 
 // ---------- connection ----------
 if (!('hid' in navigator)) $('#nohid').hidden = false;
@@ -51,8 +40,10 @@ function renderConnection() {
   const kb = state.keyboard;
   $('#kb-name').textContent = kb ? kb.name : 'No keyboard connected';
   const st = $('#kb-status');
-  st.textContent = kb ? 'Connected over USB' : 'Plug in the USB cable, then connect.';
+  const needsRestart = !$('#restart').hidden;
+  st.textContent = kb ? 'Connected over USB' : (needsRestart ? 'Needs restart' : 'Not connected');
   st.classList.toggle('ok', !!kb);
+  st.classList.toggle('err', !kb && needsRestart);
   $('#connect').textContent = kb ? 'Disconnect' : ($('#restart').hidden ? 'Connect' : 'Reconnect');
   renderSummary();
 }
@@ -167,7 +158,7 @@ async function loadFile(i, file) {
     slot.every = 1;
     log(`slot ${i + 1}: ${src.name}, ${src.frames.length} frame(s)`);
   } catch (e) {
-    setStatus(`Couldn't open ${file.name}. Try a different file.`);
+    setStatus(`Couldn't open ${file.name}. Try a different file.`, 'err');
     log(`decode failed: ${e}`);
   }
   renderSlot(i);
@@ -307,11 +298,11 @@ const warnLeave = (e) => { e.preventDefault(); e.returnValue = ''; };
 function showError(e) {
   log(`error: ${e.message || e}`);
   if (e instanceof KeyboardError) {
-    setStatus(e.message);
+    setStatus(e.message, 'err');
   } else if (e?.name === 'NotAllowedError' || e?.name === 'NotFoundError') {
     setStatus('No keyboard was chosen.');
   } else {
-    setStatus('Something went wrong talking to the keyboard.');
+    setStatus('Something went wrong talking to the keyboard.', 'err');
   }
 }
 
@@ -353,14 +344,14 @@ $('#upload').addEventListener('click', () => {
       }
     });
     const secs = Math.round((performance.now() - t0) / 1000);
-    setStatus(`Uploaded in ${secs} s. Press the TV button on the keyboard to see it.`, true);
+    setStatus(`Uploaded in ${secs} s. Press the TV button on the keyboard to see it.`, 'ok');
   });
 });
 
 $('#sync').addEventListener('click', () => withKeyboard(async (kb) => {
   setStatus('Setting the keyboard clock…');
   await kb.syncClock();
-  setStatus(`Clock set to ${new Date().toLocaleTimeString()}.`, true);
+  setStatus(`Clock set to ${new Date().toLocaleTimeString()}.`, 'ok');
 }));
 
 slotEls.forEach((_, i) => renderSlot(i));
