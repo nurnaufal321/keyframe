@@ -1,4 +1,5 @@
 // WebHID port of gmk104_screen.py. Protocol notes: GMK104-screen-protocol.md.
+// Add a keyboard to DEVICES only after confirming it speaks this protocol.
 //
 // Rules learned the hard way on the real keyboard:
 // - Never send BEGIN (0x01) before screen data (0x21): the keyboard stops

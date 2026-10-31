@@ -1,4 +1,4 @@
-import { requestKeyboard, reconnectKnown, KeyboardError, WIDTH, HEIGHT } from './protocol.js';
+import { requestKeyboard, reconnectKnown, KeyboardError, WIDTH, HEIGHT, DEVICES } from './protocol.js';
 import { decodeFile, pickFrames, drawFrame, renderForKeyboard } from './frames.js';
 
 const SECONDS_PER_FRAME = 3.5; // measured: 25 frames took ~85 s including the erase
@@ -344,7 +344,7 @@ $('#upload').addEventListener('click', () => {
       }
     });
     const secs = Math.round((performance.now() - t0) / 1000);
-    setStatus(`Uploaded in ${secs} s. Press the TV button on the keyboard to see it.`, 'ok');
+    setStatus(`Uploaded in ${secs} s. Switch the keyboard's screen to its custom slots to see it.`, 'ok');
   });
 });
 
@@ -354,5 +354,6 @@ $('#sync').addEventListener('click', () => withKeyboard(async (kb) => {
   setStatus(`Clock set to ${new Date().toLocaleTimeString()}.`, 'ok');
 }));
 
+$('#supported').textContent = DEVICES.map((d) => d.name).join(', ');
 slotEls.forEach((_, i) => renderSlot(i));
 renderConnection();

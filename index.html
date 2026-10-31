@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>GMK104 Screen</title>
-  <meta name="description" content="Put your own images and GIFs on the ZUOYA GMK104 keyboard screen, straight from Chrome or Edge.">
+  <title>KEYFRAME</title>
+  <meta name="description" content="Put your own images and GIFs on your keyboard's screen, straight from Chrome or Edge.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='7' width='28' height='18' fill='%23000'/%3E%3Crect x='6' y='11' width='20' height='10' fill='%23fff'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,8 +13,8 @@
 </head>
 <body>
   <header class="top">
-    <h1>GMK104<br>Screen</h1>
-    <p class="tagline">Put your own images and GIFs on the ZUOYA GMK104 keyboard screen. Plug in the cable. Drop files. Upload.</p>
+    <h1>Keyframe</h1>
+    <p class="tagline">Images and GIFs for keyboards with a screen. Plug in the cable. Drop files. Upload.</p>
   </header>
 
   <main>
@@ -37,6 +37,7 @@
           <h2>Slot 1</h2>
           <span class="meta">Empty</span>
         </div>
+        <div class="same-spacer" aria-hidden="true"></div>
         <label class="drop">
           <canvas class="preview" width="240" height="135"></canvas>
           <span class="hint"><b>Drop an image or GIF</b>or click to choose</span>
@@ -71,7 +72,7 @@
         <p><b>The keyboard stopped responding.</b> Restart it, then reconnect:</p>
         <ol>
           <li>Unplug the USB cable.</li>
-          <li>Move the mode switch on the front to Bluetooth or 2.4G, then back to the middle (wired).</li>
+          <li>If it has a battery, switch it to a wireless mode and back to wired (on the GMK104 that's the mode switch on the front).</li>
           <li>Plug the cable back in and press Reconnect.</li>
         </ol>
       </div>
@@ -89,9 +90,9 @@
 
   <footer>
     <div class="inner">
-      <p class="big">Unofficial.<br>Not affiliated with ZUOYA.</p>
-      <p>Works with the ZUOYA GMK104 over the USB cable. Other keyboards use different protocols and are refused.</p>
-      <p>After uploading, press the keyboard's TV button to cycle to your screens. Each upload takes about 3.5 s per frame.</p>
+      <p class="big">Keyframe.<br>Unofficial. Not affiliated with any keyboard maker.</p>
+      <p>Supported keyboards (USB cable): <span id="supported"></span>. Keyboards not on this list are refused, because screen protocols differ between makers and a wrong command can leave a screen unusable.</p>
+      <p>After uploading, cycle the keyboard's screen to its custom slots (the TV button on the GMK104). Each upload takes about 3.5 s per frame.</p>
     </div>
   </footer>
 

@@ -114,12 +114,12 @@ button:disabled, button:disabled:hover {
 .conn-text { flex: 1; min-width: 200px; }
 .conn .title { font: 600 22px/1.2 var(--body); margin-bottom: 8px; }
 
-/* ---------- slots (deliberately uneven) ---------- */
-.slots { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 40px 24px; margin-bottom: 24px; }
+/* ---------- slots ---------- */
+.slots { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 24px; align-items: start; }
 @media (max-width: 760px) { .slots { grid-template-columns: minmax(0, 1fr); } }
 .slots .card { margin-bottom: 0; }
-.slot[data-slot="1"] { margin-top: 64px; }
-@media (max-width: 760px) { .slot[data-slot="1"] { margin-top: 0; } }
+/* Keeps both drop zones at the same height: slot 2's checkbox row has a twin in slot 1. */
+.same-spacer { height: 20px; }
 .slot { display: flex; flex-direction: column; gap: 16px; }
 .slot-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; border-bottom: var(--thick) solid var(--black); padding-bottom: 8px; }
 .slot-head h2 { font: 32px/1.1 var(--head); margin: 0; text-transform: uppercase; }
